@@ -1139,25 +1139,23 @@
             // 获取当前页面URL
             const currentUrl = 'https://yt-stationery.netlify.app/客户报价单.html';
             
-            // 生成二维码
-            new QRCode(qrContainer, {
-                text: currentUrl,
-                width: 150,
-                height: 150,
-                colorDark: '#000000',
-                colorLight: '#ffffff',
-                correctLevel: QRCode.CorrectLevel.H
-            });
+            // 使用在线二维码API（更可靠）
+            const qrImg = document.createElement('img');
+            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(currentUrl)}`;
+            qrImg.alt = '报价单二维码';
+            qrImg.style.width = '150px';
+            qrImg.style.height = '150px';
+            qrImg.style.display = 'block';
+            
+            qrContainer.appendChild(qrImg);
         }
         
         // 下载二维码
         function downloadQRCode() {
-            const qrCanvas = document.querySelector('#qrcode canvas');
-            if (qrCanvas) {
-                const link = document.createElement('a');
-                link.download = 'YT文具报价单_二维码.png';
-                link.href = qrCanvas.toDataURL('image/png');
-                link.click();
+            const qrImg = document.querySelector('#qrcode img');
+            if (qrImg) {
+                // 打开二维码图片在新标签页
+                window.open(qrImg.src, '_blank');
             }
         }
 
