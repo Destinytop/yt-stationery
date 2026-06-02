@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YT文具报价单 - 分享给客户</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .share-section {
+            margin-bottom: 40px;
+        }
+        
+        .share-title {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .qr-container {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        
+        #qrcode {
+            display: inline-block;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        #qrcode img {
+            display: block;
+            width: 200px;
+            height: 200px;
+        }
+        
+        .qr-text {
+            margin-top: 15px;
+            color: #333;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .qr-hint {
+            margin-top: 10px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .url-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .url-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .url-box {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .url-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            color: #333;
+        }
+        
+        .copy-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .copy-btn.copied {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        }
+        
+        .share-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .share-method {
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .share-method:hover {
+            border-color: #667eea;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .share-method-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .share-method-title {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .share-method-desc {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .tips {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            border-radius: 5px;
+            margin-top: 30px;
+        }
+        
+        .tips-title {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 5px;
+        }
+        
+        .tips-content {
+            color: #856404;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .download-section {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .download-btn {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+            .copy-btn, .download-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 YT文具报价单</h1>
+            <p>分享给客户的多种方式</p>
+        </div>
+        
+        <!-- 二维码分享 -->
+        <div class="share-section">
+            <div class="share-title">📱 方式一：二维码（推荐）</div>
+            <div class="qr-container">
+                <div id="qrcode"></div>
+                <div class="qr-text">微信扫一扫，直接查看报价单</div>
+                <div class="qr-hint">长按识别二维码或截图保存</div>
+            </div>
+        </div>
+        
+        <!-- 链接分享 -->
+        <div class="share-section">
+            <div class="share-title">🔗 方式二：链接分享</div>
+            <div class="url-section">
+                <div class="url-label">报价单地址：</div>
+                <div class="url-box">
+                    <input type="text" class="url-input" id="shareUrl" readonly>
+                    <button class="copy-btn" onclick="copyUrl()">复制链接</button>
+                </div>
+            </div>
+            
+            <div class="share-methods">
+                <div class="share-method" onclick="shareToWeChat()">
+                    <div class="share-method-icon">💬</div>
+                    <div class="share-method-title">微信分享</div>
+                    <div class="share-method-desc">复制链接发给微信好友</div>
+                </div>
+                <div class="share-method" onclick="shareToQQ()">
+                    <div class="share-method-icon">🐧</div>
+                    <div class="share-method-title">QQ分享</div>
+                    <div class="share-method-desc">复制链接发给QQ好友</div>
+                </div>
+                <div class="share-method" onclick="sendSMS()">
+                    <div class="share-method-icon">📧</div>
+                    <div class="share-method-title">短信分享</div>
+                    <div class="share-method-desc">适合发送给手机客户</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 下载二维码 -->
+        <div class="download-section">
+            <button class="download-btn" onclick="downloadQRCode()">
+                💾 下载二维码图片
+            </button>
+            <p style="margin-top: 15px; color: #666; font-size: 14px;">
+                下载后可发朋友圈、微信群或打印在名片上
+            </p>
+        </div>
+        
+        <!-- 使用提示 -->
+        <div class="tips">
+            <div class="tips-title">💡 使用提示</div>
+            <div class="tips-content">
+                1. <strong>二维码分享最方便</strong>：客户微信扫一扫即可查看<br>
+                2. <strong>链接分享更直接</strong>：适合发送给习惯点击链接的客户<br>
+                3. <strong>建议同时提供两种方式</strong>：满足不同客户习惯<br>
+                4. 报价单已包含<strong>缅币价格</strong>（1元=640缅币），方便缅甸客户查看
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 报价单地址
+        const QUOTATION_URL = 'https://yt-stationery.netlify.app/客户报价单.html';
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 设置URL
+            document.getElementById('shareUrl').value = QUOTATION_URL;
+            
+            // 生成二维码
+            generateQRCode();
+        });
+        
+        // 生成二维码
+        function generateQRCode() {
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = '';
+            
+            new QRCode(qrContainer, {
+                text: QUOTATION_URL,
+                width: 200,
+                height: 200,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+        
+        // 复制链接
+        function copyUrl() {
+            const urlInput = document.getElementById('shareUrl');
+            urlInput.select();
+            document.execCommand('copy');
+            
+            const btn = document.querySelector('.copy-btn');
+            const originalText = btn.textContent;
+            btn.textContent = '已复制！';
+            btn.classList.add('copied');
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.classList.remove('copied');
+            }, 2000);
+        }
+        
+        // 下载二维码
+        function downloadQRCode() {
+            const qrCanvas = document.querySelector('#qrcode canvas');
+            if (qrCanvas) {
+                const link = document.createElement('a');
+                link.download = 'YT文具报价单_二维码.png';
+                link.href = qrCanvas.toDataURL('image/png');
+                link.click();
+            }
+        }
+        
+        // 分享到微信
+        function shareToWeChat() {
+            copyUrl();
+            alert('链接已复制！\n\n请打开微信，粘贴发送给客户。\n\n提示：建议同时发送二维码图片，客户扫码更方便！');
+        }
+        
+        // 分享到QQ
+        function shareToQQ() {
+            copyUrl();
+            alert('链接已复制！\n\n请打开QQ，粘贴发送给客户。');
+        }
+        
+        // 短信分享
+        function sendSMS() {
+            const shortUrl = QUOTATION_URL;
+            const message = `YT文具报价单：${shortUrl}`;
+            
+            // 尝试打开短信应用
+            if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+                window.location.href = `sms:&body=${encodeURIComponent(message)}`;
+            } else {
+                window.location.href = `sms:?body=${encodeURIComponent(message)}`;
+            }
+        }
+    </script>
+</body>
+</html>
