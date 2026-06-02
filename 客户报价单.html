@@ -931,8 +931,13 @@
     </div>
 
     <script>
-        // 当前语言
-        let currentLang = 'zh';
+        // 当前语言 - 强制默认中文
+        let currentLang = localStorage.getItem('lang') || 'zh';
+        
+        // 确保首次访问也是中文
+        if (!localStorage.getItem('lang')) {
+            localStorage.setItem('lang', 'zh');
+        }
         
         // 汇率配置：1元人民币 = 640缅币
         const EXCHANGE_RATE = 640;
