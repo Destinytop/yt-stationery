@@ -1,0 +1,21 @@
+# Netlify 配置文件
+# 确保正确部署静态网站
+
+[build]
+  # 发布目录（网站文件所在位置）
+  publish = "."
+  
+  # 构建命令（纯HTML不需要构建）
+  command = ""
+
+# 重定向规则
+[[redirects]]
+  from = "/*"
+  to = "/客户报价单.html"
+  status = 200
+
+# 自定义域名（可选）
+# [[redirects]]
+#   from = "/*"
+#   to = "/index.html"
+#   status = 200
