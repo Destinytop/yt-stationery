@@ -853,63 +853,7 @@
             }
         }
         
-        /* 二维码区域 */
-        .qr-section {
-            margin-top: 20px;
-            padding: 20px;
-            background: rgba(255,255,255,0.15);
-            border-radius: 15px;
-            display: inline-flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .qr-code-container {
-            background: white;
-            padding: 10px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-        
-        .qr-code-container img {
-            display: block;
-            width: 150px;
-            height: 150px;
-        }
-        
-        .qr-text {
-            color: white;
-            font-size: 14px;
-            font-weight: 500;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-        }
-        
-        .download-qr-btn {
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
-        }
-        
-        .download-qr-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
-        }
-        
-        @media print {
-            .qr-section {
-                display: none;
-            }
-        }
     </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
     <div class="header">
@@ -918,11 +862,6 @@
         <div class="subtitle" id="subtitle">专业文具批发 · 品质保证 · 价格优惠</div>
         <div class="contact-info">
             <span>💬 <span id="wechatLabel">微信</span>：AariesDestiny</span>
-        </div>
-        <div class="qr-section">
-            <div class="qr-code-container" id="qrcode"></div>
-            <div class="qr-text">📱 扫码查看报价单</div>
-            <button class="download-qr-btn" onclick="downloadQRCode()">💾 下载二维码</button>
         </div>
     </div>
     
@@ -1128,36 +1067,7 @@
             renderProducts();
             setupEventListeners();
             updateCartUI();
-            generateQRCode();
         });
-        
-        // 生成二维码
-        function generateQRCode() {
-            const qrContainer = document.getElementById('qrcode');
-            qrContainer.innerHTML = '';
-            
-            // 获取当前页面URL
-            const currentUrl = 'https://yt-stationery.netlify.app/客户报价单.html';
-            
-            // 使用在线二维码API（更可靠）
-            const qrImg = document.createElement('img');
-            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(currentUrl)}`;
-            qrImg.alt = '报价单二维码';
-            qrImg.style.width = '150px';
-            qrImg.style.height = '150px';
-            qrImg.style.display = 'block';
-            
-            qrContainer.appendChild(qrImg);
-        }
-        
-        // 下载二维码
-        function downloadQRCode() {
-            const qrImg = document.querySelector('#qrcode img');
-            if (qrImg) {
-                // 打开二维码图片在新标签页
-                window.open(qrImg.src, '_blank');
-            }
-        }
 
         // 切换购物车显示
         function toggleCart() {
