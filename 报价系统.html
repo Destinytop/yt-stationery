@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>富八文具报价系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        .controls {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .profit-selector {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .profit-selector label {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .profit-btn {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .profit-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .profit-btn.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+            max-width: 400px;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .search-box input:focus {
+            border-color: #667eea;
+        }
+        
+        .category-filter {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .category-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .category-btn:hover, .category-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border-color: #667eea;
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            color: #667eea;
+            position: relative;
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 10px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .product-image .placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .product-image .placeholder span {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .product-info {
+            padding: 20px;
+        }
+        
+        .product-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .product-spec {
+            color: #666;
+            font-size: 0.95em;
+            margin-bottom: 15px;
+        }
+        
+        .price-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .cost-price {
+            color: #666;
+            text-decoration: line-through;
+            font-size: 0.9em;
+        }
+        
+        .sale-price {
+            color: #e74c3c;
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+        
+        .profit-tag {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+        
+        .add-to-cart {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        
+        .add-to-cart:hover {
+            opacity: 0.9;
+        }
+        
+        .cart-sidebar {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 20px rgba(0,0,0,0.2);
+            transition: right 0.3s;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .cart-sidebar.open {
+            right: 0;
+        }
+        
+        .cart-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .cart-header h2 {
+            margin: 0;
+        }
+        
+        .close-cart {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .cart-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .cart-item-image {
+            width: 60px;
+            height: 60px;
+            background: #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .cart-item-info {
+            flex: 1;
+        }
+        
+        .cart-item-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .cart-item-price {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .cart-footer {
+            padding: 20px;
+            border-top: 2px solid #e9ecef;
+        }
+        
+        .cart-total {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .checkout-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .cart-toggle {
+            position: fixed;
+            right: 30px;
+            bottom: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #e74c3c;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 999;
+        }
+        
+        .overlay.show {
+            display: block;
+        }
+        
+        .print-section {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-top: 2px solid #e9ecef;
+            text-align: center;
+        }
+        
+        .print-btn {
+            padding: 12px 30px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+        
+        @media print {
+            .controls, .cart-toggle, .cart-sidebar, .add-to-cart, .print-section {
+                display: none !important;
+            }
+            
+            .product-card {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+                padding: 15px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                max-width: 100%;
+            }
+            
+            .cart-sidebar {
+                width: 100%;
+                right: -100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 富八文具报价系统</h1>
+            <p>专业文具批发 · 品质保证 · 价格优惠</p>
+        </div>
+        
+        <div class="controls">
+            <div class="profit-selector">
+                <label>利润率：</label>
+                <button class="profit-btn active" data-profit="18">18%</button>
+                <button class="profit-btn" data-profit="30">30%</button>
+                <button class="profit-btn" data-profit="40">40%</button>
+                <button class="profit-btn" data-profit="50">50%</button>
+            </div>
+            
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="搜索产品名称...">
+            </div>
+            
+            <div class="category-filter" id="categoryFilter">
+                <button class="category-btn active" data-category="all">全部</button>
+            </div>
+        </div>
+        
+        <div class="products-grid" id="productsGrid">
+            <!-- 产品卡片将通过JS动态生成 -->
+        </div>
+        
+        <div class="print-section">
+            <button class="print-btn" onclick="window.print()">🖨️ 打印报价单</button>
+            <button class="print-btn" onclick="exportToExcel()">📊 导出Excel</button>
+        </div>
+    </div>
+    
+    <button class="cart-toggle" onclick="toggleCart()">
+        🛒
+        <span class="cart-count" id="cartCount">0</span>
+    </button>
+    
+    <div class="overlay" id="overlay" onclick="toggleCart()"></div>
+    
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h2>🛒 购物车</h2>
+            <button class="close-cart" onclick="toggleCart()">×</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- 购物车项目将通过JS动态生成 -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">总计: ¥<span id="cartTotal">0.00</span></div>
+            <button class="checkout-btn" onclick="generateQuotation()">生成报价单</button>
+        </div>
+    </div>
+
+    <script>
+        // 产品数据
+        const products = [
+            { id: 30, name: "喷墨相纸", category: "纸类", image: "产品图片/喷墨相纸.png", supplier: "佛山古楼纸制品有限公司", note: "价格不含运费", specs: [{ name: "135g A4*50张", cost: 9.50 }, { name: "150g A4*50张", cost: 10.50 }, { name: "135g A3*50张", cost: 21.00 }, { name: "150g A3*50张", cost: 23.00 }] },
+            { id: 1, name: "透明文件袋", category: "文件袋", image: "产品图片/product_1_白色.png", specs: [{ name: "14c", cost: 0.24 }, { name: "16c", cost: 0.32 }, { name: "18c", cost: 0.38 }] },
+            { id: 2, name: "网格袋", category: "文件袋", image: "产品图片/网购袋.png", specs: [{ name: "A4", cost: 0.78 }, { name: "A5", cost: 0.70 }, { name: "A6", cost: 0.58 }] },
+            { id: 3, name: "11孔文件袋", category: "文件袋", image: "产品图片/product_3.png", specs: [{ name: "中厚3c一张", cost: 0.04 }, { name: "加厚4c一张", cost: 0.06 }, { name: "特厚6c一张", cost: 0.08 }] },
+            { id: 4, name: "孔夹", category: "夹子", image: "产品图片/product_4.png", specs: [{ name: "2孔夹", cost: 3.20 }, { name: "3孔夹", cost: 4.68 }] },
+            { id: 5, name: "文件夹", category: "文件夹", image: "产品图片/product_5.png", specs: [{ name: "普通款单夹", cost: 1.66 }, { name: "普通款双夹", cost: 1.98 }, { name: "抽取单夹", cost: 2.05 }, { name: "抽取双夹", cost: 2.20 }, { name: "彩色单夹", cost: 2.18 }, { name: "彩色双夹", cost: 2.48 }] },
+            { id: 6, name: "文件盘", category: "收纳", image: "产品图片/product_6.png", specs: [{ name: "一个", cost: 8.20 }] },
+            { id: 7, name: "科目袋", category: "文件袋", image: "产品图片/科目袋子.png", specs: [{ name: "单层", cost: 1.42 }, { name: "双层", cost: 2.62 }] },
+            { id: 8, name: "巨能写0.5笔", category: "笔类", image: "产品图片/product_8.png", specs: [{ name: "单支", cost: 0.50 }] },
+            { id: 9, name: "球纹袋", category: "文件袋", image: "产品图片/product_9.png", specs: [{ name: "A4", cost: 1.28 }, { name: "A5", cost: 0.98 }, { name: "A6", cost: 0.78 }] },
+            { id: 10, name: "莫兰迪写字板", category: "写字板", image: "产品图片/product_10.png", specs: [{ name: "A4", cost: 2.28 }, { name: "A5", cost: 1.68 }] },
+            { id: 11, name: "印刷写字板", category: "写字板", image: "产品图片/product_11.png", specs: [{ name: "A4", cost: 2.05 }, { name: "A5", cost: 1.45 }, { name: "A6", cost: 1.20 }] },
+            { id: 12, name: "0.7按动笔", category: "笔类", image: "产品图片/0.7按动笔.png", specs: [{ name: "一支", cost: 0.48 }] },
+            { id: 13, name: "黑色公文包", category: "包类", image: "产品图片/黑色公文包.png", specs: [{ name: "一个", cost: 14.80 }] },
+            { id: 14, name: "公文包", category: "包类", image: "产品图片/布包.png", specs: [{ name: "简约", cost: 3.25 }, { name: "立体", cost: 4.53 }] },
+            { id: 15, name: "风琴包", category: "包类", image: "产品图片/product_15.png", specs: [{ name: "一个", cost: 5.10 }] },
+            { id: 16, name: "书立", category: "收纳", image: "产品图片/书立.png", specs: [{ name: "四栏", cost: 4.50 }, { name: "L型", cost: 1.98 }] },
+            { id: 17, name: "L透明文件夹", category: "文件夹", image: "产品图片/product_17.png", specs: [{ name: "中厚一个", cost: 0.17 }, { name: "加厚一个", cost: 0.25 }] },
+            { id: 18, name: "长尾夹", category: "夹子", image: "产品图片/长尾夹.png", specs: [{ name: "15mm一盒", cost: 3.74 }, { name: "19mm一盒", cost: 3.30 }, { name: "25mm一盒", cost: 5.60 }, { name: "32mm一盒", cost: 4.30 }, { name: "41mm一盒", cost: 6.60 }, { name: "51mm一盒", cost: 5.25 }] },
+            { id: 19, name: "莫兰迪文件栏", category: "收纳", image: "产品图片/product_19.png", specs: [{ name: "一个", cost: 7.38 }] },
+            { id: 20, name: "透明拉边袋", category: "文件袋", image: "产品图片/product_20.png", specs: [{ name: "A4", cost: 0.49 }, { name: "A5", cost: 0.32 }, { name: "A6", cost: 0.30 }] },
+            { id: 21, name: "书粘", category: "文具", image: "产品图片/product_21.png", specs: [{ name: "套餐", cost: 8.20 }, { name: "A4", cost: 3.62 }, { name: "16k", cost: 3.18 }, { name: "22k", cost: 1.82 }] },
+            { id: 22, name: "档案盒", category: "收纳", image: "产品图片/20mm档案盒.png", colors: ["蓝色", "黑色"], specs: [{ name: "20mm", cost: 1.86 }, { name: "35mm", cost: 2.45 }, { name: "55mm", cost: 2.78 }, { name: "75mm", cost: 3.38 }] },
+            { id: 23, name: "文件栏", category: "收纳", image: "产品图片/product_23.png", specs: [{ name: "四栏不带笔筒", cost: 6.60 }, { name: "四栏带笔筒", cost: 7.10 }, { name: "一联不带笔筒", cost: 2.30 }, { name: "三联不带笔筒", cost: 5.60 }, { name: "三联带笔筒", cost: 6.40 }] },
+            { id: 24, name: "卡通写字板", category: "写字板", image: "产品图片/product_24.png", specs: [{ name: "一个", cost: 3.50 }] },
+            { id: 25, name: "资料册", category: "文件夹", image: "产品图片/product_25.png", specs: [{ name: "10页", cost: 1.79 }, { name: "20页", cost: 2.30 }, { name: "30页", cost: 2.80 }, { name: "40页", cost: 3.37 }, { name: "60页", cost: 4.56 }, { name: "80页", cost: 6.80 }, { name: "100页", cost: 7.50 }] },
+            { id: 26, name: "试卷册", category: "文件夹", image: "产品图片/收纳册.png", specs: [{ name: "20页", cost: 2.95 }, { name: "30页", cost: 3.80 }, { name: "40页", cost: 4.40 }] },
+            { id: 27, name: "抽杆夹", category: "夹子", image: "产品图片/product_27.png", specs: [{ name: "薄款", cost: 0.28 }, { name: "加厚", cost: 0.36 }] },
+            { id: 28, name: "一体成型档案盒", category: "收纳", image: "产品图片/一体成型档案盒.png", specs: [{ name: "20mm", cost: 2.60 }, { name: "35mm", cost: 3.90 }, { name: "55mm", cost: 4.30 }, { name: "75mm", cost: 6.80 }] },
+            { id: 29, name: "按压笔-4色", category: "笔类", image: "产品图片/按压笔-4色.png", supplier: "汕头市潮南区成田金达利塑料厂", specs: [{ name: "一套12只", cost: 7.80 }] }
+        ];
+
+        // 产品图标映射
+        const productIcons = {
+            "文件袋": "📁",
+            "文件夹": "📂",
+            "夹子": "📎",
+            "收纳": "📦",
+            "笔类": "✏️",
+            "写字板": "📋",
+            "包类": "💼",
+            "文具": "📒"
+        };
+
+        let currentProfit = 18;
+        let cart = [];
+        let currentCategory = 'all';
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initCategoryFilter();
+            renderProducts();
+            setupEventListeners();
+        });
+
+        // 初始化分类筛选
+        function initCategoryFilter() {
+            const categories = [...new Set(products.map(p => p.category))];
+            const filterContainer = document.getElementById('categoryFilter');
+            
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = 'category-btn';
+                btn.dataset.category = cat;
+                btn.textContent = cat;
+                filterContainer.appendChild(btn);
+            });
+        }
+
+        // 设置事件监听
+        function setupEventListeners() {
+            // 利润率切换
+            document.querySelectorAll('.profit-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.profit-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentProfit = parseInt(this.dataset.profit);
+                    renderProducts();
+                    updateCartPrices();
+                });
+            });
+
+            // 分类筛选
+            document.getElementById('categoryFilter').addEventListener('click', function(e) {
+                if (e.target.classList.contains('category-btn')) {
+                    document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    currentCategory = e.target.dataset.category;
+                    renderProducts();
+                }
+            });
+
+            // 搜索
+            document.getElementById('searchInput').addEventListener('input', function() {
+                renderProducts();
+            });
+        }
+
+        // 计算售价
+        function calculatePrice(cost, profit) {
+            return (cost * (1 + profit / 100)).toFixed(2);
+        }
+
+        // 渲染产品
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            let filteredProducts = products;
+            
+            // 分类筛选
+            if (currentCategory !== 'all') {
+                filteredProducts = filteredProducts.filter(p => p.category === currentCategory);
+            }
+            
+            // 搜索筛选
+            if (searchTerm) {
+                filteredProducts = filteredProducts.filter(p => 
+                    p.name.toLowerCase().includes(searchTerm) ||
+                    p.category.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            grid.innerHTML = filteredProducts.map(product => `
+                <div class="product-card" data-id="${product.id}">
+                    <div class="product-image">
+                        ${product.image ? `<img src="${product.image}" alt="${product.name}" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'placeholder\\'>${productIcons[product.category] || '📦'}<span>产品图片</span></div>';">` : `<div class="placeholder">${productIcons[product.category] || '📦'}<span>产品图片</span></div>`}
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-spec">${product.specs.map(s => s.name).join(' / ')}</div>
+                        <div class="price-section">
+                            <div class="cost-price">进货价: ¥${product.specs[0].cost.toFixed(2)} 起</div>
+                            <div class="sale-price">¥${calculatePrice(product.specs[0].cost, currentProfit)} 起</div>
+                            <span class="profit-tag">利润率 ${currentProfit}%</span>
+                        </div>
+                        <button class="add-to-cart" onclick="addToCart(${product.id})">
+                            加入购物车
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 添加到购物车
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            // 选择规格
+            const specOptions = product.specs.map((s, i) => `${i + 1}. ${s.name} (进货¥${s.cost})`).join('\n');
+            const specIndex = prompt(`请选择规格:\n${specOptions}\n\n输入编号:`);
+            
+            if (specIndex === null) return;
+            
+            const index = parseInt(specIndex) - 1;
+            if (isNaN(index) || index < 0 || index >= product.specs.length) {
+                alert('无效的选择');
+                return;
+            }
+            
+            const quantity = parseInt(prompt('请输入数量:', '1'));
+            if (isNaN(quantity) || quantity < 1) {
+                alert('无效的数量');
+                return;
+            }
+            
+            const spec = product.specs[index];
+            const salePrice = parseFloat(calculatePrice(spec.cost, currentProfit));
+            
+            cart.push({
+                id: Date.now(),
+                productId: product.id,
+                name: product.name,
+                spec: spec.name,
+                cost: spec.cost,
+                salePrice: salePrice,
+                quantity: quantity,
+                profit: currentProfit
+            });
+            
+            updateCart();
+            alert('已添加到购物车!');
+        }
+
+        // 更新购物车
+        function updateCart() {
+            const cartItems = document.getElementById('cartItems');
+            const cartCount = document.getElementById('cartCount');
+            const cartTotal = document.getElementById('cartTotal');
+            
+            cartCount.textContent = cart.length;
+            
+            const total = cart.reduce((sum, item) => sum + item.salePrice * item.quantity, 0);
+            cartTotal.textContent = total.toFixed(2);
+            
+            cartItems.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <div class="cart-item-image">📦</div>
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${item.name} - ${item.spec}</div>
+                        <div>数量: ${item.quantity}</div>
+                        <div class="cart-item-price">¥${item.salePrice} × ${item.quantity} = ¥${(item.salePrice * item.quantity).toFixed(2)}</div>
+                    </div>
+                    <button onclick="removeFromCart(${item.id})" style="background:#e74c3c;color:white;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;">删除</button>
+                </div>
+            `).join('');
+        }
+
+        // 更新购物车价格（当利润率改变时）
+        function updateCartPrices() {
+            cart = cart.map(item => ({
+                ...item,
+                salePrice: parseFloat(calculatePrice(item.cost, currentProfit))
+            }));
+            updateCart();
+        }
+
+        // 从购物车移除
+        function removeFromCart(itemId) {
+            cart = cart.filter(item => item.id !== itemId);
+            updateCart();
+        }
+
+        // 切换购物车显示
+        function toggleCart() {
+            document.getElementById('cartSidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('show');
+        }
+
+        // 生成报价单
+        function generateQuotation() {
+            if (cart.length === 0) {
+                alert('购物车为空!');
+                return;
+            }
+            
+            const total = cart.reduce((sum, item) => sum + item.salePrice * item.quantity, 0);
+            const quotationHTML = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>报价单</title>
+                    <style>
+                        body { font-family: 'Microsoft YaHei', Arial, sans-serif; padding: 40px; }
+                        .header { text-align: center; margin-bottom: 30px; }
+                        .header h1 { color: #667eea; }
+                        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+                        th { background: #667eea; color: white; }
+                        tr:nth-child(even) { background: #f8f9fa; }
+                        .total { text-align: right; font-size: 1.5em; color: #e74c3c; font-weight: bold; margin-top: 20px; }
+                        .footer { margin-top: 40px; text-align: center; color: #666; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>富八文具报价单</h1>
+                        <p>报价日期: ${new Date().toLocaleDateString('zh-CN')}</p>
+                    </div>
+                    <table>
+                        <tr>
+                            <th>序号</th>
+                            <th>产品名称</th>
+                            <th>规格</th>
+                            <th>单价</th>
+                            <th>数量</th>
+                            <th>小计</th>
+                        </tr>
+                        ${cart.map((item, index) => `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${item.name}</td>
+                                <td>${item.spec}</td>
+                                <td>¥${item.salePrice}</td>
+                                <td>${item.quantity}</td>
+                                <td>¥${(item.salePrice * item.quantity).toFixed(2)}</td>
+                            </tr>
+                        `).join('')}
+                    </table>
+                    <div class="total">总计: ¥${total.toFixed(2)}</div>
+                    <div class="footer">
+                        <p>感谢您的惠顾！</p>
+                        <p>联系电话: _____________</p>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            const newWindow = window.open('', '_blank');
+            newWindow.document.write(quotationHTML);
+            newWindow.document.close();
+        }
+
+        // 导出Excel
+        function exportToExcel() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            let filteredProducts = products;
+            
+            if (currentCategory !== 'all') {
+                filteredProducts = filteredProducts.filter(p => p.category === currentCategory);
+            }
+            
+            if (searchTerm) {
+                filteredProducts = filteredProducts.filter(p => 
+                    p.name.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // 创建HTML表格
+            let html = `
+                <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+                <head>
+                    <meta charset="UTF-8">
+                    <style>
+                        table { border-collapse: collapse; width: 100%; font-family: 'Microsoft YaHei', Arial, sans-serif; }
+                        th { background-color: #4472C4; color: white; font-weight: bold; padding: 12px; text-align: center; border: 1px solid #2F528F; }
+                        td { padding: 10px; border: 1px solid #B4C7E7; text-align: center; }
+                        tr:nth-child(even) { background-color: #D9E2F3; }
+                        tr:nth-child(odd) { background-color: #FFFFFF; }
+                        tr:hover { background-color: #F4B084; }
+                        .product-name { font-weight: bold; color: #203864; }
+                        .cost-price { color: #C00000; font-weight: bold; }
+                        .sale-price { color: #00B050; font-weight: bold; }
+                        .supplier { color: #7030A0; font-size: 10px; }
+                        .category { background-color: #FFC000; font-weight: bold; }
+                        .header-row { background-color: #4472C4 !important; }
+                        .title { font-size: 18px; font-weight: bold; text-align: center; padding: 15px; background-color: #203864; color: white; }
+                    </style>
+                </head>
+                <body>
+                    <table>
+                        <tr><td colspan="9" class="title">YT文具报价表 - 内部系统</td></tr>
+                        <tr>
+                            <th>序号</th>
+                            <th>产品名称</th>
+                            <th>规格</th>
+                            <th>分类</th>
+                            <th>进货价</th>
+                            <th>18%利润售价</th>
+                            <th>30%利润售价</th>
+                            <th>50%利润售价</th>
+                            <th>供应商</th>
+                        </tr>
+            `;
+            
+            let rowNum = 1;
+            filteredProducts.forEach(product => {
+                const supplier = product.supplier || '-';
+                product.specs.forEach((spec, index) => {
+                    const price18 = calculatePrice(spec.cost, 18);
+                    const price30 = calculatePrice(spec.cost, 30);
+                    const price50 = calculatePrice(spec.cost, 50);
+                    const productName = index === 0 ? product.name : '';
+                    const rowSpan = index === 0 ? ` rowspan="${product.specs.length}"` : '';
+                    const supplierCell = index === 0 ? `<td${rowSpan} class="supplier">${supplier}</td>` : '';
+                    
+                    if (index === 0) {
+                        html += `
+                            <tr>
+                                <td${rowSpan}>${rowNum}</td>
+                                <td${rowSpan} class="product-name">${product.name}</td>
+                                <td>${spec.name}</td>
+                                <td${rowSpan} class="category">${product.category}</td>
+                                <td class="cost-price">¥${spec.cost.toFixed(2)}</td>
+                                <td class="sale-price">¥${price18}</td>
+                                <td class="sale-price">¥${price30}</td>
+                                <td class="sale-price">¥${price50}</td>
+                                ${supplierCell}
+                            </tr>
+                        `;
+                    } else {
+                        html += `
+                            <tr>
+                                <td>${spec.name}</td>
+                                <td class="cost-price">¥${spec.cost.toFixed(2)}</td>
+                                <td class="sale-price">¥${price18}</td>
+                                <td class="sale-price">¥${price30}</td>
+                                <td class="sale-price">¥${price50}</td>
+                            </tr>
+                        `;
+                    }
+                });
+                rowNum++;
+            });
+            
+            html += `
+                    </table>
+                    <p style="text-align: center; color: #666; font-size: 11px; margin-top: 20px;">
+                        导出时间: ${new Date().toLocaleString('zh-CN')} | YT文具内部报价系统
+                    </p>
+                </body>
+                </html>
+            `;
+            
+            const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `YT文具报价表_${new Date().toLocaleDateString('zh-CN').replace(/\//g, '-')}.xls`;
+            link.click();
+        }
+    </script>
+</body>
+</html>
