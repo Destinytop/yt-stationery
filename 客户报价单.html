@@ -812,44 +812,271 @@
             }
         }
         
+        /* ========== 手机端优化 ========== */
         @media (max-width: 768px) {
+            /* 头部优化 */
+            .header {
+                padding: 30px 15px;
+            }
+            
             .header h1 {
-                font-size: 2em;
+                font-size: 1.6em;
+                margin-bottom: 10px;
             }
             
-            .products-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
+            .subtitle {
+                font-size: 0.95em;
+                padding: 0 10px;
             }
             
+            .contact-info {
+                font-size: 0.9em;
+                padding: 8px 15px;
+                margin-top: 15px;
+            }
+            
+            /* 语言切换按钮 */
+            .lang-switch {
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                padding: 6px 12px;
+                font-size: 12px;
+                z-index: 100;
+                background: rgba(255,255,255,0.95);
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+            
+            /* 控制区优化 */
             .controls {
                 flex-direction: column;
                 align-items: stretch;
-                padding: 20px;
+                padding: 15px;
+                gap: 12px;
+                position: sticky;
+                top: 0;
+                z-index: 50;
+                background: rgba(255,255,255,0.98);
+                backdrop-filter: blur(10px);
+                box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             }
             
             .search-box {
                 max-width: 100%;
             }
             
+            .search-box input {
+                padding: 12px 15px 12px 45px;
+                font-size: 16px;
+            }
+            
+            /* 分类筛选横向滚动 */
             .category-filter {
                 justify-content: flex-start;
                 overflow-x: auto;
                 flex-wrap: nowrap;
-                padding-bottom: 10px;
+                padding-bottom: 5px;
+                gap: 8px;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            
+            .category-filter::-webkit-scrollbar {
+                display: none;
+            }
+            
+            .category-btn {
+                padding: 8px 16px;
+                font-size: 13px;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+            
+            .export-btn {
+                padding: 10px 20px;
+                font-size: 14px;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            /* 产品容器 */
+            .products-container {
+                padding: 15px;
+                margin: 20px auto;
+            }
+            
+            /* 产品卡片优化 */
+            .products-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .product-card {
+                border-radius: 16px;
+            }
+            
+            .product-image {
+                height: 200px;
+            }
+            
+            .product-info {
+                padding: 18px;
+            }
+            
+            .product-name {
+                font-size: 1.1em;
+                margin-bottom: 12px;
+            }
+            
+            .product-category {
+                font-size: 11px;
+                padding: 4px 10px;
+            }
+            
+            /* 规格区域优化 */
+            .product-specs {
+                padding: 12px;
+                border-radius: 10px;
+            }
+            
+            .spec-item {
+                padding: 8px 0;
+            }
+            
+            .spec-name {
+                font-size: 14px;
+            }
+            
+            .spec-price {
+                font-size: 1.2em;
+            }
+            
+            /* 颜色选择器 */
+            .color-selector {
+                padding: 10px 12px;
+                flex-wrap: wrap;
+            }
+            
+            .color-btn {
+                width: 24px;
+                height: 24px;
+            }
+            
+            .selected-color {
+                font-size: 12px;
+                width: 100%;
+                margin-top: 8px;
+                margin-left: 0;
+            }
+            
+            /* 数量控制 */
+            .quantity-control {
+                padding: 8px;
+                gap: 8px;
+            }
+            
+            .quantity-input {
+                width: 60px;
+                padding: 6px 10px;
+                font-size: 15px;
+            }
+            
+            .add-to-cart-btn {
+                padding: 8px 14px;
+                font-size: 13px;
+            }
+            
+            /* 购物车侧边栏优化 */
+            .cart-panel {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .cart-items {
+                padding: 15px;
+            }
+            
+            .cart-item {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+            
+            .cart-item-name {
+                font-size: 14px;
+            }
+            
+            .cart-item-details {
+                font-size: 13px;
+            }
+            
+            .cart-item-price {
+                font-size: 15px;
+            }
+            
+            /* 购物车浮动按钮 */
+            .cart-toggle {
+                width: 56px;
+                height: 56px;
+                font-size: 24px;
+                right: 15px;
+                bottom: 15px;
+            }
+            
+            .cart-count {
+                width: 22px;
+                height: 22px;
+                font-size: 12px;
+            }
+            
+            /* 底部优化 */
+            .footer {
+                padding: 30px 20px;
+            }
+            
+            .footer h3 {
+                font-size: 1.4em;
             }
             
             .footer .contact {
                 flex-direction: column;
-                gap: 15px;
+                gap: 12px;
+                font-size: 1em;
             }
             
-            .lang-switch {
-                position: relative;
-                top: auto;
-                right: auto;
-                margin-top: 15px;
-                display: inline-block;
+            .footer .notice {
+                font-size: 0.85em;
+                padding: 0 10px;
+            }
+            
+            /* 图片查看器 */
+            .image-modal-close {
+                top: 10px;
+                right: 15px;
+                font-size: 32px;
+            }
+            
+            .image-modal-thumbnails img {
+                width: 60px;
+                height: 60px;
+            }
+        }
+        
+        /* 超小屏幕优化 */
+        @media (max-width: 375px) {
+            .header h1 {
+                font-size: 1.4em;
+            }
+            
+            .product-image {
+                height: 180px;
+            }
+            
+            .product-info {
+                padding: 15px;
+            }
+            
+            .spec-price {
+                font-size: 1.1em;
             }
         }
         
