@@ -530,23 +530,36 @@
         .cart-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 20px;
+            padding: 15px 20px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 15px;
         }
         
         .cart-header h3 {
             margin: 0;
             font-size: 1.3em;
+            flex: 1;
         }
         
-        .close-cart {
-            background: none;
+        .back-cart, .close-cart {
+            background: rgba(255,255,255,0.2);
             border: none;
             color: white;
-            font-size: 24px;
+            font-size: 18px;
             cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .back-cart:hover, .close-cart:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
         }
         
         .cart-items {
@@ -1116,6 +1129,7 @@
     <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
     <div class="cart-panel" id="cartPanel">
         <div class="cart-header">
+            <button class="back-cart" onclick="toggleCart()">←</button>
             <h3 id="cartTitle">🛒 订货清单</h3>
             <button class="close-cart" onclick="toggleCart()">×</button>
         </div>
@@ -1293,8 +1307,26 @@
         let currentCategory = 'all';
         let cart = [];
 
+        // 从本地存储加载购物车
+        function loadCartFromStorage() {
+            const savedCart = localStorage.getItem('yt_stationery_cart');
+            if (savedCart) {
+                try {
+                    cart = JSON.parse(savedCart);
+                } catch (e) {
+                    cart = [];
+                }
+            }
+        }
+
+        // 保存购物车到本地存储
+        function saveCartToStorage() {
+            localStorage.setItem('yt_stationery_cart', JSON.stringify(cart));
+        }
+
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
+            loadCartFromStorage();
             initCategoryFilter();
             renderProducts();
             setupEventListeners();
@@ -1337,6 +1369,7 @@
             }
 
             updateCartUI();
+            saveCartToStorage(); // 保存到本地存储
             
             // 自动打开购物车
             const cartPanel = document.getElementById('cartPanel');
@@ -1364,6 +1397,7 @@
         function removeFromCart(index) {
             cart.splice(index, 1);
             updateCartUI();
+            saveCartToStorage(); // 保存到本地存储
         }
 
         // 更新购物车UI
@@ -1562,41 +1596,111 @@
             alert(currentLang === 'zh' ? '订单图片已生成！请截图或保存发给商家' : 'Order image generated! Please screenshot or save to send');
         }
 
-        // 导出Excel
+        // 导出Excel - 简约高级样式
         function exportOrderExcel() {
             if (cart.length === 0) {
                 alert(currentLang === 'zh' ? '订单清单是空的' : 'Your order list is empty');
                 return;
             }
 
-            // 创建CSV内容
-            let csvContent = '\uFEFF'; // BOM for UTF-8
+            // 创建HTML表格（用于生成美观的Excel）
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const totalMMK = formatMMK(totalPrice);
+            const dateStr = new Date().toLocaleDateString('zh-CN');
             
-            // 标题
-            csvContent += 'YT文具报价单\n';
-            csvContent += `订单日期,${new Date().toLocaleDateString()}\n`;
-            csvContent += `微信,AariesDestiny\n\n`;
+            let htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+body { font-family: 'Microsoft YaHei', Arial, sans-serif; margin: 0; padding: 40px; background: #f5f5f5; }
+.container { max-width: 800px; margin: 0 auto; background: white; padding: 40px; box-shadow: 0 2px 20px rgba(0,0,0,0.1); }
+.header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px solid #667eea; }
+.header h1 { color: #333; font-size: 28px; margin: 0 0 10px 0; font-weight: 600; }
+.header .info { color: #666; font-size: 14px; margin: 5px 0; }
+.header .date { color: #999; font-size: 12px; margin-top: 15px; }
+table { width: 100%; border-collapse: collapse; margin: 25px 0; }
+th { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 12px; text-align: left; font-weight: 500; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+td { padding: 14px 12px; border-bottom: 1px solid #eee; color: #333; font-size: 14px; }
+tr:hover { background: #f8f9ff; }
+.number { text-align: center; font-weight: 600; color: #667eea; }
+.price { text-align: right; font-family: 'Consolas', monospace; color: #e74c3c; font-weight: 600; }
+.subtotal { text-align: right; font-family: 'Consolas', monospace; color: #27ae60; font-weight: 700; }
+.total-row { background: #f8f9fa !important; font-weight: 700; }
+.total-row td { border-top: 2px solid #667eea; border-bottom: none; padding: 18px 12px; }
+.total-label { text-align: right; color: #333; font-size: 16px; }
+.total-price { text-align: right; color: #e74c3c; font-size: 18px; font-weight: 700; }
+.total-mmk { text-align: right; color: #27ae60; font-size: 14px; font-weight: 600; }
+.footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 12px; }
+.footer .contact { color: #667eea; font-weight: 500; margin-top: 10px; }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h1>YT 文具报价单</h1>
+<div class="info">专业文具批发 · 品质保证 · 价格优惠</div>
+<div class="info">微信：AariesDestiny</div>
+<div class="date">订单日期：${dateStr}</div>
+</div>
+<table>
+<thead>
+<tr>
+<th style="width:8%">序号</th>
+<th style="width:12%">编号</th>
+<th style="width:28%">产品名称</th>
+<th style="width:15%">规格</th>
+<th style="width:10%">数量</th>
+<th style="width:12%">单价</th>
+<th style="width:15%">小计</th>
+</tr>
+</thead>
+<tbody>
+`;
             
-            // 表头
-            csvContent += '序号,产品编号,产品名称,规格,数量,单价,小计\n';
-            
-            // 数据
             cart.forEach((item, index) => {
-                csvContent += `${index + 1},${item.code},"${item.productName}","${item.specName}",${item.quantity},${item.price.toFixed(2)},${(item.price * item.quantity).toFixed(2)}\n`;
+                const subtotal = item.price * item.quantity;
+                htmlContent += `
+<tr>
+<td class="number">${index + 1}</td>
+<td>${item.code}</td>
+<td>${item.productName}</td>
+<td>${item.specName}</td>
+<td class="number">${item.quantity}</td>
+<td class="price">¥${item.price.toFixed(2)}</td>
+<td class="subtotal">¥${subtotal.toFixed(2)}</td>
+</tr>
+`;
             });
             
-            // 合计
-            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            csvContent += `\n合计,,,,,,${totalPrice.toFixed(2)}\n`;
+            htmlContent += `
+<tr class="total-row">
+<td colspan="6" class="total-label">合计金额：</td>
+<td class="total-price">¥${totalPrice.toFixed(2)}</td>
+</tr>
+<tr class="total-row">
+<td colspan="6" class="total-label">缅币金额：</td>
+<td class="total-mmk">${totalMMK} Ks</td>
+</tr>
+</tbody>
+</table>
+<div class="footer">
+<p>感谢您的订购！我们将尽快为您安排发货</p>
+<p class="contact">联系方式：微信 AariesDestiny</p>
+</div>
+</div>
+</body>
+</html>`;
             
-            // 下载
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            // 下载为Excel（使用HTML表格格式）
+            const blob = new Blob([htmlContent], { type: 'application/vnd.ms-excel;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `YT_Order_${new Date().toISOString().slice(0,10)}.csv`;
+            link.download = `YT_Order_${new Date().toISOString().slice(0,10)}.xls`;
             link.click();
             
-            alert(currentLang === 'zh' ? 'Excel文件已导出！可用Excel打开' : 'Excel file exported!');
+            alert(currentLang === 'zh' ? '✓ 订单Excel已导出！' : '✓ Order Excel exported!');
         }
 
         // 切换语言
@@ -1906,6 +2010,7 @@
             }
 
             updateCartUI();
+            saveCartToStorage(); // 保存到本地存储
             
             // 自动打开购物车
             const cartPanel = document.getElementById('cartPanel');
